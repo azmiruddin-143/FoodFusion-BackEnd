@@ -8,7 +8,7 @@ app.use(express.json())
 app.use(cors())
 
 
-// mongodb//
+// mongodb setup//
   
 const uri = `mongodb+srv://${process.env.DB_FOODUSSER}:${process.env.DB_FOODPASS}@cluster0.phy8j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
