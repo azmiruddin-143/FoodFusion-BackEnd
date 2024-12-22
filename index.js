@@ -44,7 +44,7 @@ async function run() {
         // foods post//
         app.post("/foods", async (req, res) => {
             const foodBody = req.body
-            const result = await foodsCollection.insertOne(foodBody);
+            const result = await foodsCollection.insertOne(foodBody)
             res.send(result)
         })
 
@@ -52,6 +52,12 @@ async function run() {
         app.post("/purchase", async (req, res) => {
             const purchaseBody = req.body
             const result = await foodPurchase.insertOne(purchaseBody);
+            const filter = { _id: new ObjectId(purchaseBody.purchaseId) }
+            const update = {
+                    $inc: { PurchaseCount: 1 }
+            }
+
+            const updatePurchase = await foodsCollection.updateOne(filter, update);
             res.send(result)
         })
 
