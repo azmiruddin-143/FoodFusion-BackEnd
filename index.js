@@ -7,8 +7,7 @@ const port = process.env.PORT || 5000
 app.use(express.json())
 app.use(cors())
 
-
-
+  
 const uri = `mongodb+srv://${process.env.DB_FOODUSSER}:${process.env.DB_FOODPASS}@cluster0.phy8j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
