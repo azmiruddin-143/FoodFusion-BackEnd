@@ -40,7 +40,6 @@ async function run() {
         })
 
 
-
         // foods post//
         app.post("/foods", async (req, res) => {
             const foodBody = req.body
@@ -48,13 +47,15 @@ async function run() {
             res.send(result)
         })
 
+
+
         //Purchase post//
         app.post("/purchase", async (req, res) => {
             const purchaseBody = req.body
             const result = await foodPurchase.insertOne(purchaseBody);
             const filter = { _id: new ObjectId(purchaseBody.purchaseId) }
             const update = {
-                    $inc: { PurchaseCount: 1 }
+                $inc: { purchaseCount: 1 }
             }
 
             const updatePurchase = await foodsCollection.updateOne(filter, update);
@@ -78,10 +79,14 @@ async function run() {
         })
 
 
+        // email quary //
 
-
-
-
+        app.get("/foods/:email", async (req, res) => {
+            const email = req.params.email
+            const query = { sellerEmail: email };
+            const result = await foodsCollection.find(query).toArray();
+            res.send(result)
+        })
 
 
         // await client.db("admin").command({ ping: 1 });
