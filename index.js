@@ -38,6 +38,18 @@ async function run() {
             const result = await foodsCollection.find().toArray()
             res.send(result)
         })
+        app.get("/all-foods", async (req, res) => {
+            // search filter setup//
+            const search = req.query.search
+            const filter = req.query.filter
+            const sort = req.query.sort
+            const query = {productName:{$regex:search, $options: 'i'}}
+            if(filter) query.category = filter
+            let options = {}
+            if(sort) options = {sort: {purchaseCount: sort === "asc" ? 1 : -1} }
+            const result = await foodsCollection.find(query,options).toArray()
+            res.send(result)
+        })
 
 
         // foods post//
@@ -89,7 +101,7 @@ async function run() {
         })
         app.get("/purchase/:email", async (req, res) => {
             const email = req.params.email
-            const query = {buyerEmail: email };
+            const query = { buyerEmail: email };
             const result = await foodPurchase.find(query).toArray();
             res.send(result)
         })
@@ -111,7 +123,7 @@ async function run() {
                     category: updateObject.category,
                     foodorigin: updateObject.foodorigin,
                     price: updateObject.price,
-                  }
+                }
             }
 
             const result = await foodsCollection.updateOne(filter, updateDoc, options);
@@ -121,6 +133,14 @@ async function run() {
 
 
 
+        // dilet my foods//
+
+        app.delete("/foodpurchase/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) };
+            const result = await foodPurchase.deleteOne(query);
+            res.send(result)
+        })
 
 
 
