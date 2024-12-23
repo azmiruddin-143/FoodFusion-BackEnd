@@ -87,6 +87,41 @@ async function run() {
             const result = await foodsCollection.find(query).toArray();
             res.send(result)
         })
+        app.get("/purchase/:email", async (req, res) => {
+            const email = req.params.email
+            const query = {buyerEmail: email };
+            const result = await foodPurchase.find(query).toArray();
+            res.send(result)
+        })
+
+
+        // foods card update //
+
+        app.put("/myfoods/:id", async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateObject = req.body
+            const updateDoc = {
+                $set: {
+                    productName: updateObject.productName,
+                    image: updateObject.image,
+                    description: updateObject.description,
+                    quantity: updateObject.quantity,
+                    category: updateObject.category,
+                    foodorigin: updateObject.foodorigin,
+                    price: updateObject.price,
+                  }
+            }
+
+            const result = await foodsCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+
+        })
+
+
+
+
 
 
         // await client.db("admin").command({ ping: 1 });
