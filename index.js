@@ -54,8 +54,8 @@ async function run() {
         app.get('/topselling', async (req, res) => {
             try {
               const topSelling = await foodsCollection.aggregate([
-                { $sort: { purchaseCount: -1 } },  // Sort by purchaseCount (descending order)
-                { $limit: 6 }  // Limit to the top 6 products
+                { $sort: { purchaseCount: -1 } },  
+                { $limit: 6 } 
               ]).toArray();
           
               res.send(topSelling);
