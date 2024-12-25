@@ -38,6 +38,7 @@ async function run() {
             const result = await foodsCollection.find().toArray()
             res.send(result)
         })
+
         app.get("/all-foods", async (req, res) => {
             // search filter setup//
             const search = req.query.search
@@ -46,10 +47,22 @@ async function run() {
             const query = {productName:{$regex:search, $options: 'i'}}
             if(filter) query.category = filter
             let options = {}
-            if(sort) options = {sort: {purchaseCount: sort === "asc" ? 1 : -1} }
+            if(sort) options = {sort: {purchaseCount: sort === "asc" ? 1 : -1}}
             const result = await foodsCollection.find(query,options).toArray()
             res.send(result)
         })
+        app.get('/topselling', async (req, res) => {
+            try {
+              const topSelling = await foodsCollection.aggregate([
+                { $sort: { purchaseCount: -1 } },  // Sort by purchaseCount (descending order)
+                { $limit: 6 }  // Limit to the top 6 products
+              ]).toArray();
+          
+              res.send(topSelling);
+            } catch (error) {
+              res.status(500).send('Error fetching top-selling products');
+            }
+          });
 
 
         // foods post//
@@ -62,19 +75,61 @@ async function run() {
 
 
         //Purchase post//
-        app.post("/purchase", async (req, res) => {
-            const purchaseBody = req.body
-            const result = await foodPurchase.insertOne(purchaseBody);
-            const filter = { _id: new ObjectId(purchaseBody.purchaseId) }
-            const update = {
-                $inc: { purchaseCount: 1 }
-            }
+        // app.post("/purchase", async (req, res) => {
+        //     const purchaseBody = req.body
+        //     const result = await foodPurchase.insertOne(purchaseBody);
+        //     const filter = { _id: new ObjectId(purchaseBody.purchaseId) }
+        //     const update = {
+        //         $inc: { purchaseCount: 1 }
+        //     }
+            
+        //     const updatePurchase = await foodsCollection.updateOne(filter,  update);
+        //     res.send(result)
+        // })
 
-            const updatePurchase = await foodsCollection.updateOne(filter, update);
-            res.send(result)
-        })
+    //    ........................................................
 
 
+
+    app.post("/purchase", async (req, res) => {
+        const purchaseBody = req.body;
+        const { purchaseId, foodquantity } = purchaseBody; 
+        // Step 1: Find the product by ID
+        const product = await foodsCollection.findOne({ _id: new ObjectId(purchaseId) });
+    
+        if (!product) {
+            return res.status(404).send({ message: "Product not found" });
+        }
+    
+        // Step 2: Check if sufficient quantity is available
+        if (product.quantity < foodquantity) {
+            return res.status(400).send({ message: "Not enough quantity available" });
+        }
+    
+        // Step 3: Calculate new quantity
+        const newQuantity = product.quantity - foodquantity;
+    
+        // Step 4: Update product quantity and increment purchase count
+        const updateResult = await foodsCollection.updateOne(
+            { _id: new ObjectId(purchaseId) },
+            { $set: { quantity: newQuantity }, $inc: { purchaseCount: 1 } }
+        );
+    
+        // Step 5: Insert purchase data into `foodPurchase` collection
+        const purchaseResult = await foodPurchase.insertOne(purchaseBody);
+    
+        // Respond with success message and updated quantity
+        res.send({
+            message: "Purchase successful",
+            updatedQuantity: newQuantity,
+            purchaseData: purchaseResult,
+        });
+    });
+
+
+
+
+        // ..............................................................
 
         // all product id //
         app.get("/singlefood/:id", async (req, res) => {
