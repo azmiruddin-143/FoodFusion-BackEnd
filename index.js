@@ -105,6 +105,9 @@ async function run() {
             const result = await foodsCollection.find(query, options).toArray()
             res.send(result)
         })
+
+
+
         app.get('/topselling', async (req, res) => {
             try {
                 const topSelling = await foodsCollection.aggregate([
@@ -125,23 +128,7 @@ async function run() {
             const result = await foodsCollection.insertOne(foodBody)
             res.send(result)
         })
-
-
-
-        //Purchase post//
-        // app.post("/purchase", async (req, res) => {
-        //     const purchaseBody = req.body
-        //     const result = await foodPurchase.insertOne(purchaseBody);
-        //     const filter = { _id: new ObjectId(purchaseBody.purchaseId) }
-        //     const update = {
-        //         $inc: { purchaseCount: 1 }
-        //     }
-
-        //     const updatePurchase = await foodsCollection.updateOne(filter,  update);
-        //     res.send(result)
-        // })
-
-        //    ........................................................
+      
 
 
 
