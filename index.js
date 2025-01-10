@@ -53,8 +53,7 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
-        // Send a ping to confirm a successful connection
-        // backend start//
+    
 
 
         const database = client.db("foodsDB");
@@ -105,7 +104,6 @@ async function run() {
             const result = await foodsCollection.find(query, options).toArray()
             res.send(result)
         })
-
 
 
         app.get('/topselling', async (req, res) => {
@@ -166,8 +164,6 @@ async function run() {
                 purchaseData: purchaseResult,
             });
         });
-
-
 
 
         // ..............................................................
@@ -238,7 +234,7 @@ async function run() {
 
 
 
-        // dilet my foods//
+        // dilet my foods item//
 
         app.delete("/foodpurchase/:id", async (req, res) => {
             const id = req.params.id
