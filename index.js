@@ -1,3 +1,5 @@
+
+// foods
 require('dotenv').config()
 const express = require('express');
 const app = express()
@@ -110,7 +112,7 @@ async function run() {
             try {
                 const topSelling = await foodsCollection.aggregate([
                     { $sort: { purchaseCount: -1 } },
-                    { $limit: 6 }
+                    { $limit: 8 }
                 ]).toArray();
 
                 res.send(topSelling);
